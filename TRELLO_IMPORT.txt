@@ -1,0 +1,83 @@
+HOW TO USE THIS FILE
+====================
+Trello has no markdown/CSV board importer — but pasting multiple lines of
+text into a list turns each line into its own card automatically. So:
+
+1. Create a board (e.g. "Rental App Backlog").
+2. Create one LIST per sprint below (use the exact sprint name as the list
+   name, e.g. "Sprint 1 — Foundation: Auth & Property Setup").
+3. Click "Add a card" at the bottom of that list, then paste the whole
+   block of lines under that sprint's heading in one go. Trello will turn
+   each line into its own card, in order.
+4. Repeat for each sprint/list.
+5. Optional cleanup in Trello afterward:
+   - Create one label per epic (Auth, Properties & Units, Tenants, Leases,
+     Payments, Maintenance, Access Control) and label each card using the
+     [EPIC] tag already in its title.
+   - Open BACKLOG.md and copy the "Acceptance:" line from each story into
+     that card's description for full detail.
+
+Each line is formatted as:
+[EPIC] US-ID — Story title (priority)
+
+----------------------------------------------------------------------
+
+Sprint 1 — Foundation: Auth & Property Setup
+----------------------------------------------------------------------
+[Auth] US-101 — Register an account (P0)
+[Auth] US-102 — Log in and receive a JWT (P0)
+[Auth] US-103 — View my own profile (P1)
+[Properties & Units] US-201 — Create a property (P0)
+[Properties & Units] US-202 — List/view my properties only (P0)
+[Properties & Units] US-203 — Update a property (P1)
+[Properties & Units] US-205 — Add a unit to a property (P0)
+[Properties & Units] US-206 — List units under a property (P0)
+[Properties & Units] US-207 — View/update a single unit (P1)
+[Access Control] US-701 — Role-scoped data on every endpoint (P0)
+
+Sprint 2 — Admin Tools & Tenant Records
+----------------------------------------------------------------------
+[Auth] US-104 — List all users (P1)
+[Auth] US-105 — View and update any user (P1)
+[Properties & Units] US-204 — Delete a property (P2)
+[Tenants] US-301 — Create a tenant profile (P0)
+[Tenants] US-302 — Link a tenant to a login account (P1)
+[Tenants] US-303 — List and search tenants (P1)
+[Tenants] US-304 — View/update a tenant (P1)
+[Tenants] US-305 — Delete a tenant (P2)
+
+Sprint 3 — Leasing
+----------------------------------------------------------------------
+[Leases] US-401 — Create a lease (P0)
+[Leases] US-402 — Prevent double-booking a unit (P0)
+[Leases] US-403 — View a lease (P1)
+[Leases] US-404 — List leases by unit (P1)
+[Leases] US-405 — List leases by tenant (P1)
+[Leases] US-406 — Update lease terms (P1)
+[Leases] US-407 — Terminate a lease early (P0)
+[Properties & Units] US-208 — Vacancy status stays accurate automatically (P0)
+
+Sprint 4 — Rent Invoicing & Payments
+----------------------------------------------------------------------
+[Payments] US-501 — Generate a rent invoice (P0)
+[Payments] US-502 — View an invoice (P1)
+[Payments] US-503 — List invoices for a lease (P1)
+[Payments] US-504 — Record a payment (P0)
+[Payments] US-505 — See accurate payment status (P0)
+[Payments] US-506 — Refresh overdue statuses (P1)
+
+Sprint 5 — Maintenance Requests
+----------------------------------------------------------------------
+[Maintenance] US-601 — Tenant logs an issue (P0)
+[Maintenance] US-602 — Staff logs an issue (P1)
+[Maintenance] US-603 — List open requests (P0)
+[Maintenance] US-604 — View a request (P1)
+[Maintenance] US-605 — List requests by unit (P1)
+[Maintenance] US-606 — Update request status (P0)
+[Maintenance] US-607 — Tenant tracks their request (P1)
+
+Sprint 6 — Hardening & Polish
+----------------------------------------------------------------------
+[Access Control] Deepen US-701 coverage — authz regression tests across all modules
+Cross-epic bug fixes surfaced in Sprints 1–5
+P2 items not yet done (e.g. US-204 if deferred)
