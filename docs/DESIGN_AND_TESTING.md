@@ -434,7 +434,16 @@ The original local database was backed up before the browser test and restored a
 | SM-03 | `GET /` (frontend) | 200, SPA served | 200 | ✅ |
 | SM-04 | HTTPS / TLS | Valid certificate | Served over HTTPS (Render-managed certificate) | ✅ |
 
-**Security-fix deployment:** see §B6.3 (recorded after the fixes were pushed).
+**Security-fix deployment:** commit `dc1c413`, 10 Oct 2026.
+
+| ID | Check | Expected | Actual | Verdict |
+|---|---|---|---|---|
+| SM-05 | Build and start, including automatic Alembic migration at startup | `Application startup complete`, no errors | Startup complete, no errors or tracebacks in the Render log | ✅ |
+| SM-06 | `GET /health` | `200 {"status":"ok"}` | `200 {"status":"ok"}` | ✅ |
+| SM-07 | `GET /` and `/js/views/auth.js` | 200; sign-up form no longer offers Admin | 200; no `admin` option | ✅ |
+| SM-08 | Anonymous `POST /api/v1/auth/register` with `role: admin` (EX-01 on the live site) | 403 | `403 "Only an admin can create admin accounts"` | ✅ |
+| SM-09 | Same request with a forged bearer token | 401 | `401 "Could not validate credentials"` | ✅ |
+| SM-10 | `GET /api/v1/tenants` with no token | 401 | 401 | ✅ |
 
 **Why:** smoke tests are a quick, cheap check that the deployed artefact actually runs in the target environment: correct Python version, dependencies installed, start command right, migrations applied and static files found. Unit and integration tests cannot verify these.
 
