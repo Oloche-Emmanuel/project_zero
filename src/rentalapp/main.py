@@ -8,9 +8,9 @@ from fastapi.staticfiles import StaticFiles
 
 from rentalapp.config import get_settings
 from rentalapp.core.exceptions import AppError
-from rentalapp.database import Base, engine
+from rentalapp.migrate import upgrade_database
 
-# Import models so they register on Base.metadata before create_all() runs.
+# Import models so they register on Base.metadata.
 from rentalapp.modules.leases import models as _leases_models  # noqa: F401
 from rentalapp.modules.leases.router import router as leases_router
 from rentalapp.modules.maintenance import models as _maintenance_models  # noqa: F401
@@ -29,16 +29,16 @@ settings = get_settings()
 FRONTEND_DIR = Path(__file__).resolve().parents[2] / "frontend"
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Convenience for local/dev use (esp. the default SQLite database).
-    # In production, manage schema changes with Alembic instead:
-    #   alembic upgrade head
-    Base.metadata.create_all(bind=engine)
-    yield
+def create_app(run_migrations: bool = True) -> FastAPI:
+    @asynccontextmanager
+    async def lifespan(app: FastAPI):
+        # Apply any pending Alembic migrations, so every environment (local
+        # SQLite, Render Postgres) is on the latest schema before serving.
+        # Tests build their own throwaway schema and pass False.
+        if run_migrations:
+            upgrade_database()
+        yield
 
-
-def create_app() -> FastAPI:
     app = FastAPI(title=settings.app_name, lifespan=lifespan)
 
     # The frontend authenticates with a bearer token (not cookies), so a

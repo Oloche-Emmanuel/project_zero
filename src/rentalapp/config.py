@@ -21,6 +21,8 @@ class Settings(BaseSettings):
     secret_key: str = "change-me-to-a-random-secret"
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 60
+    # bcrypt work factor; each +1 doubles hashing time. Tests lower it.
+    bcrypt_rounds: int = 12
 
 
 @lru_cache

@@ -1,6 +1,6 @@
 import { api, getToken, setToken } from "./api.js";
 import { route, resolve, navigate, currentPath } from "./router.js";
-import { qs, qsa } from "./ui.js";
+import { qs, qsa, escapeHtml } from "./ui.js";
 import { renderAuth } from "./views/auth.js";
 import { renderDashboard } from "./views/dashboard.js";
 import { renderProperties, renderPropertyDetail } from "./views/properties.js";
@@ -61,9 +61,9 @@ function renderShell() {
         <nav id="nav"></nav>
         <div class="sidebar-footer">
           <div class="user-chip">
-            <div class="avatar">${appState.user.full_name.charAt(0).toUpperCase()}</div>
+            <div class="avatar">${escapeHtml(appState.user.full_name.charAt(0).toUpperCase())}</div>
             <div>
-              <div class="user-name">${appState.user.full_name}</div>
+              <div class="user-name">${escapeHtml(appState.user.full_name)}</div>
               <div class="user-role">${appState.user.role}</div>
             </div>
           </div>

@@ -11,6 +11,7 @@ from rentalapp.modules.users.models import User, UserRole
 from rentalapp.modules.users.repository import UserRepository
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
+optional_oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login", auto_error=False)
 
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:
@@ -22,6 +23,18 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     if user is None or not user.is_active:
         raise AuthError("Could not validate credentials")
     return user
+
+
+def get_optional_user(
+    token: str | None = Depends(optional_oauth2_scheme), db: Session = Depends(get_db)
+) -> User | None:
+    """Like get_current_user, but anonymous callers get None instead of 401.
+
+    A token that *is* sent must still be valid.
+    """
+    if token is None:
+        return None
+    return get_current_user(token, db)
 
 
 def require_roles(*roles: UserRole) -> Callable[[User], User]:

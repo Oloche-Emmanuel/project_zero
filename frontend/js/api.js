@@ -62,7 +62,8 @@ async function request(path, { method = "GET", body, form, auth = true } = {}) {
 
 export const api = {
   // Auth / users
-  register: (data) => request("/api/v1/auth/register", { method: "POST", body: data, auth: false }),
+  // Sends the token when present so a signed-in admin can create admin accounts.
+  register: (data) => request("/api/v1/auth/register", { method: "POST", body: data }),
   login: (email, password) =>
     request("/api/v1/auth/login", { method: "POST", form: { username: email, password }, auth: false }),
   me: () => request("/api/v1/users/me"),

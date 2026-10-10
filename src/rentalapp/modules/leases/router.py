@@ -18,18 +18,18 @@ def create_lease(data: LeaseCreate, db: Session = Depends(get_db), user: User = 
 
 
 @router.get("/{lease_id}", response_model=LeaseRead)
-def get_lease(lease_id: int, db: Session = Depends(get_db), _: User = Depends(get_current_user)):
-    return LeaseService(db).get(lease_id)
+def get_lease(lease_id: int, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+    return LeaseService(db).get(lease_id, user)
 
 
 @router.get("/by-unit/{unit_id}", response_model=list[LeaseRead])
-def list_leases_for_unit(unit_id: int, db: Session = Depends(get_db), _: User = Depends(get_current_user)):
-    return LeaseService(db).list_for_unit(unit_id)
+def list_leases_for_unit(unit_id: int, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+    return LeaseService(db).list_for_unit(unit_id, user)
 
 
 @router.get("/by-tenant/{tenant_id}", response_model=list[LeaseRead])
-def list_leases_for_tenant(tenant_id: int, db: Session = Depends(get_db), _: User = Depends(get_current_user)):
-    return LeaseService(db).list_for_tenant(tenant_id)
+def list_leases_for_tenant(tenant_id: int, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+    return LeaseService(db).list_for_tenant(tenant_id, user)
 
 
 @router.patch("/{lease_id}", response_model=LeaseRead)

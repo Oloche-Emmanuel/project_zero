@@ -11,6 +11,8 @@ class Tenant(Base):
     __tablename__ = "tenants"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    # The landlord/admin who manages this tenant record; scopes who can see it.
+    owner_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True, index=True)
     user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True, unique=True)
     first_name: Mapped[str] = mapped_column(String(100), nullable=False)
     last_name: Mapped[str] = mapped_column(String(100), nullable=False)

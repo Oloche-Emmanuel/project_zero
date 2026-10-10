@@ -18,8 +18,13 @@ SQLAlchemy.
 - **Maintenance requests** — tenants/staff log issues per unit, tracked
   through open → in_progress → completed/cancelled.
 - **Auth & role-based access control** — JWT-based login with three
-  roles (`admin`, `landlord`, `tenant`); landlords only see their own
-  properties, admins see everything.
+  roles (`admin`, `landlord`, `tenant`). Landlords only see their own
+  properties, units, tenants, leases, invoices and maintenance requests;
+  tenants see the leases, invoices and requests of their own tenant record;
+  admins see everything. All ownership rules live in
+  `core/access.py` (`AccessPolicy`). Public sign-up can only create
+  `tenant` or `landlord` accounts — admins are created by an existing admin
+  or with `python -m rentalapp.create_admin`.
 
 ## Architecture
 
@@ -67,9 +72,11 @@ src/rentalapp/
 - **`core/exceptions.py` decouples errors from HTTP.** Services raise
   `NotFoundError`, `ConflictError`, etc.; a single handler in `main.py`
   turns those into HTTP responses, so services stay framework-agnostic.
-- **Alembic is wired up** (`alembic.ini`, `migrations/`) for schema
-  migrations once the app moves past ad-hoc `create_all()` during local
-  development.
+- **Schema changes go through Alembic** (`alembic.ini`, `migrations/`).
+  The app applies pending migrations at startup (`rentalapp/migrate.py`),
+  so local SQLite and production Postgres are always on the latest schema.
+  Databases created by older builds (via `create_all()`) are detected and
+  stamped at the baseline revision automatically.
 
 ### Natural extension points
 
@@ -109,7 +116,7 @@ pip install -r requirements.txt
 copy .env.example .env
 ```
 
-Run the API (auto-creates SQLite tables on startup for local dev):
+Run the API (applies database migrations on startup):
 
 ```bash
 uvicorn rentalapp.main:app --reload --app-dir src
@@ -117,23 +124,36 @@ uvicorn rentalapp.main:app --reload --app-dir src
 
 Open http://127.0.0.1:8000/docs for interactive Swagger UI.
 
+Create the first admin account (public sign-up can't create admins; the
+password is prompted for):
+
+```bash
+python -m rentalapp.create_admin admin@example.com "Your Name"
+```
+
+To create an admin on a deployed database, run the same command locally
+with `DATABASE_URL` set to that database's external connection string.
+
 Run tests:
 
 ```bash
 pytest
 ```
 
-For production schema changes, use Alembic instead of the dev
-auto-create:
+After changing models, generate and review a migration (the app applies
+it automatically on next startup):
 
 ```bash
-alembic revision --autogenerate -m "add invoices table"
+alembic revision --autogenerate -m "describe the change"
 alembic upgrade head
 ```
 
+See [docs/DESIGN_AND_TESTING.md](docs/DESIGN_AND_TESTING.md) for the
+design rationale, deployment options and the full test report.
+
 ## Example flow
 
-1. `POST /api/v1/auth/register` — create a `landlord` user.
+1. `POST /api/v1/auth/register` — create a `landlord` (or `tenant`) user.
 2. `POST /api/v1/auth/login` — get a JWT (send as `Authorization: Bearer <token>`).
 3. `POST /api/v1/properties` — create a property.
 4. `POST /api/v1/properties/{id}/units` — add a unit.

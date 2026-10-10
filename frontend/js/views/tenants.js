@@ -1,5 +1,5 @@
 import { api } from "../api.js";
-import { openModal, toast, fmtMoney, fmtDate, labelize, formToJson } from "../ui.js";
+import { openModal, toast, fmtMoney, fmtDate, labelize, formToJson, escapeHtml } from "../ui.js";
 import { navigate } from "../router.js";
 import { openLeaseForm } from "./leases.js";
 
@@ -28,9 +28,9 @@ export async function renderTenants(view) {
             .map(
               (t) => `
             <tr class="row-link" data-href="/tenants/${t.id}">
-              <td>${t.first_name} ${t.last_name}</td>
-              <td>${t.email}</td>
-              <td>${t.phone ?? "—"}</td>
+              <td>${escapeHtml(t.first_name)} ${escapeHtml(t.last_name)}</td>
+              <td>${escapeHtml(t.email)}</td>
+              <td>${escapeHtml(t.phone ?? "—")}</td>
               <td><a href="#/tenants/${t.id}">View →</a></td>
             </tr>`
             )
@@ -68,8 +68,8 @@ export async function renderTenantDetail(view, state, idStr) {
     <div class="view-header">
       <div>
         <a href="#/tenants" class="back-link">← Tenants</a>
-        <h1>${tenant.first_name} ${tenant.last_name}</h1>
-        <p class="muted">${tenant.email}${tenant.phone ? ` · ${tenant.phone}` : ""}</p>
+        <h1>${escapeHtml(tenant.first_name)} ${escapeHtml(tenant.last_name)}</h1>
+        <p class="muted">${escapeHtml(tenant.email)}${tenant.phone ? ` · ${escapeHtml(tenant.phone)}` : ""}</p>
       </div>
       <div class="header-actions">
         <button id="edit-tenant" class="btn">Edit</button>
@@ -80,7 +80,7 @@ export async function renderTenantDetail(view, state, idStr) {
     <div class="card" style="margin-bottom:20px">
       <h3>Emergency contact</h3>
       <p class="muted">
-        ${tenant.emergency_contact_name ? `${tenant.emergency_contact_name}${tenant.emergency_contact_phone ? " · " + tenant.emergency_contact_phone : ""}` : "Not on file"}
+        ${tenant.emergency_contact_name ? `${escapeHtml(tenant.emergency_contact_name)}${tenant.emergency_contact_phone ? " · " + escapeHtml(tenant.emergency_contact_phone) : ""}` : "Not on file"}
       </p>
     </div>
 
@@ -138,15 +138,15 @@ function openTenantForm(onDone, existing) {
   const { close } = openModal(isEdit ? "Edit tenant" : "Add tenant", `
     <form id="tenant-form">
       <div class="form-row">
-        <label>First name<input name="first_name" required value="${existing?.first_name ?? ""}" /></label>
-        <label>Last name<input name="last_name" required value="${existing?.last_name ?? ""}" /></label>
+        <label>First name<input name="first_name" required value="${escapeHtml(existing?.first_name ?? "")}" /></label>
+        <label>Last name<input name="last_name" required value="${escapeHtml(existing?.last_name ?? "")}" /></label>
       </div>
-      <label>Email<input type="email" name="email" required value="${existing?.email ?? ""}" /></label>
-      <label>Phone<input name="phone" value="${existing?.phone ?? ""}" /></label>
+      <label>Email<input type="email" name="email" required value="${escapeHtml(existing?.email ?? "")}" /></label>
+      <label>Phone<input name="phone" value="${escapeHtml(existing?.phone ?? "")}" /></label>
       <label>Date of birth<input type="date" name="date_of_birth" value="${existing?.date_of_birth ?? ""}" /></label>
       <div class="form-row">
-        <label>Emergency contact name<input name="emergency_contact_name" value="${existing?.emergency_contact_name ?? ""}" /></label>
-        <label>Emergency contact phone<input name="emergency_contact_phone" value="${existing?.emergency_contact_phone ?? ""}" /></label>
+        <label>Emergency contact name<input name="emergency_contact_name" value="${escapeHtml(existing?.emergency_contact_name ?? "")}" /></label>
+        <label>Emergency contact phone<input name="emergency_contact_phone" value="${escapeHtml(existing?.emergency_contact_phone ?? "")}" /></label>
       </div>
       <div class="form-actions">
         <button type="submit" class="btn btn-primary">${isEdit ? "Save changes" : "Add tenant"}</button>

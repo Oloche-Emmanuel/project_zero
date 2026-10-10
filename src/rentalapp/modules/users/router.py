@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
-from rentalapp.core.deps import get_current_user, require_roles
+from rentalapp.core.deps import get_current_user, get_optional_user, require_roles
 from rentalapp.database import get_db
 from rentalapp.modules.users.models import User, UserRole
 from rentalapp.modules.users.schemas import Token, UserCreate, UserRead, UserUpdate
@@ -12,8 +12,10 @@ router = APIRouter(prefix="/api/v1", tags=["users"])
 
 
 @router.post("/auth/register", response_model=UserRead, status_code=201)
-def register(data: UserCreate, db: Session = Depends(get_db)) -> User:
-    return UserService(db).register(data)
+def register(
+    data: UserCreate, db: Session = Depends(get_db), current_user: User | None = Depends(get_optional_user)
+) -> User:
+    return UserService(db).register(data, created_by=current_user)
 
 
 @router.post("/auth/login", response_model=Token)

@@ -7,7 +7,7 @@ from rentalapp.modules.payments.models import InvoiceStatus
 
 class InvoiceCreate(BaseModel):
     lease_id: int
-    amount_due: float
+    amount_due: float = Field(gt=0)
     due_date: date
     notes: str | None = None
 
@@ -23,7 +23,7 @@ class InvoiceRead(BaseModel):
 
     id: int
     lease_id: int
-    amount_due: float
+    amount_due: float = Field(gt=0)
     amount_paid: float
     due_date: date
     paid_date: date | None

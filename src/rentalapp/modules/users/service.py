@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 
-from rentalapp.core.exceptions import AuthError, ConflictError, NotFoundError
+from rentalapp.core.exceptions import AuthError, ConflictError, ForbiddenError, NotFoundError
 from rentalapp.core.security import create_access_token, hash_password, verify_password
-from rentalapp.modules.users.models import User
+from rentalapp.modules.users.models import User, UserRole
 from rentalapp.modules.users.repository import UserRepository
 from rentalapp.modules.users.schemas import UserCreate, UserUpdate
 
@@ -11,7 +11,11 @@ class UserService:
     def __init__(self, db: Session) -> None:
         self.repo = UserRepository(db)
 
-    def register(self, data: UserCreate) -> User:
+    def register(self, data: UserCreate, created_by: User | None = None) -> User:
+        # Anyone may sign up as a tenant or landlord; admin accounts can only
+        # be created by an existing admin (or the create_admin command).
+        if data.role == UserRole.ADMIN and (created_by is None or created_by.role != UserRole.ADMIN):
+            raise ForbiddenError("Only an admin can create admin accounts")
         if self.repo.get_by_email(data.email):
             raise ConflictError(f"A user with email '{data.email}' already exists")
         user = User(

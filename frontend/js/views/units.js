@@ -1,5 +1,5 @@
 import { api } from "../api.js";
-import { fmtMoney, fmtDate, labelize } from "../ui.js";
+import { fmtMoney, fmtDate, labelize, escapeHtml } from "../ui.js";
 import { navigate } from "../router.js";
 import { openUnitForm } from "./properties.js";
 import { openLeaseForm } from "./leases.js";
@@ -28,7 +28,7 @@ export async function renderUnitDetail(view, state, idStr) {
     <div class="view-header">
       <div>
         <a href="#/properties/${unit.property_id}" class="back-link">← Property ${unit.property_id}</a>
-        <h1>Unit ${unit.unit_number}</h1>
+        <h1>Unit ${escapeHtml(unit.unit_number)}</h1>
         <p class="muted">${unit.bedrooms} bd / ${unit.bathrooms} ba${unit.square_feet ? ` · ${unit.square_feet} sqft` : ""} · ${fmtMoney(unit.rent_amount)}/mo</p>
       </div>
       <div class="header-actions">
@@ -88,7 +88,7 @@ export async function renderUnitDetail(view, state, idStr) {
   }
 
   view.querySelector("#add-maint").addEventListener("click", () => {
-    openMaintenanceForm(rerender, { presetUnitId: unitId });
+    openMaintenanceForm(rerender, { presetUnitId: unitId, staff });
   });
 
   const maintList = view.querySelector("#maint-list");
@@ -104,7 +104,7 @@ export async function renderUnitDetail(view, state, idStr) {
           .map(
             (r) => `
           <tr>
-            <td>${r.title}</td>
+            <td>${escapeHtml(r.title)}</td>
             <td><span class="badge badge-${r.priority}">${labelize(r.priority)}</span></td>
             <td><span class="badge badge-${r.status}">${labelize(r.status)}</span></td>
             <td class="muted">${fmtDate(r.created_at?.slice(0, 10))}</td>

@@ -1,4 +1,5 @@
 import { api } from "../api.js";
+import { escapeHtml } from "../ui.js";
 import { navigate } from "../router.js";
 
 export async function renderDashboard(view, state) {
@@ -25,7 +26,7 @@ export async function renderDashboard(view, state) {
 }
 
 function escapeFirstName(fullName) {
-  return (fullName || "").split(" ")[0] || "there";
+  return escapeHtml((fullName || "").split(" ")[0] || "there");
 }
 
 function statCard(label, value, href) {

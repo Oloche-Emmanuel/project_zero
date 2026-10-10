@@ -1,5 +1,5 @@
 import { api } from "../api.js";
-import { openModal, toast, fmtDateTime, labelize, formToJson } from "../ui.js";
+import { openModal, toast, fmtDateTime, labelize, formToJson, escapeHtml } from "../ui.js";
 
 const ROLES = ["admin", "landlord", "tenant"];
 
@@ -25,8 +25,8 @@ export async function renderUsers(view) {
             .map(
               (u) => `
             <tr>
-              <td>${u.full_name}</td>
-              <td>${u.email}</td>
+              <td>${escapeHtml(u.full_name)}</td>
+              <td>${escapeHtml(u.email)}</td>
               <td><span class="badge">${labelize(u.role)}</span></td>
               <td><span class="badge ${u.is_active ? "badge-active" : "badge-cancelled"}">${u.is_active ? "Active" : "Inactive"}</span></td>
               <td class="muted">${fmtDateTime(u.created_at)}</td>
@@ -51,7 +51,7 @@ export async function renderUsers(view) {
 function openUserEditForm(user, onDone) {
   const { close } = openModal(`Edit ${user.full_name}`, `
     <form id="user-edit-form">
-      <label>Full name<input name="full_name" required value="${user.full_name}" /></label>
+      <label>Full name<input name="full_name" required value="${escapeHtml(user.full_name)}" /></label>
       <label>Status
         <select name="is_active">
           <option value="true" ${user.is_active ? "selected" : ""}>Active</option>

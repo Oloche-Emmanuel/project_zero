@@ -1,5 +1,5 @@
 import { api } from "../api.js";
-import { openModal, toast, fmtMoney, fmtDate, labelize, formToJson } from "../ui.js";
+import { openModal, toast, fmtMoney, fmtDate, labelize, formToJson, escapeHtml } from "../ui.js";
 
 export async function renderLeaseDetail(view, state, idStr) {
   const id = Number(idStr);
@@ -94,7 +94,7 @@ export async function renderLeaseDetail(view, state, idStr) {
             <td>${fmtMoney(inv.amount_due)}</td>
             <td>${fmtMoney(inv.amount_paid)}</td>
             <td><span class="badge badge-${inv.status}">${labelize(inv.status)}</span></td>
-            <td class="muted">${inv.notes ?? "—"}</td>
+            <td class="muted">${escapeHtml(inv.notes ?? "—")}</td>
             ${
               staff
                 ? `<td>${
@@ -218,7 +218,7 @@ export async function openLeaseForm(onDone, { presetUnitId, presetTenantId } = {
       <label>Property
         <select id="lease-property-select">
           <option value="">Select a property</option>
-          ${properties.map((p) => `<option value="${p.id}">${p.name}</option>`).join("")}
+          ${properties.map((p) => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join("")}
         </select>
       </label>
       <label>Unit
@@ -237,7 +237,7 @@ export async function openLeaseForm(onDone, { presetUnitId, presetTenantId } = {
       <label>Tenant
         <select name="tenant_id" required>
           <option value="">Select a tenant</option>
-          ${tenants.map((t) => `<option value="${t.id}">${t.first_name} ${t.last_name}</option>`).join("")}
+          ${tenants.map((t) => `<option value="${t.id}">${escapeHtml(t.first_name)} ${escapeHtml(t.last_name)}</option>`).join("")}
         </select>
       </label>
     `;
@@ -277,7 +277,7 @@ export async function openLeaseForm(onDone, { presetUnitId, presetTenantId } = {
       unitSelect.disabled = false;
       unitSelect.innerHTML =
         `<option value="">Select a unit</option>` +
-        units.map((u) => `<option value="${u.id}">${u.unit_number} — ${fmtMoney(u.rent_amount)}/mo</option>`).join("");
+        units.map((u) => `<option value="${u.id}">${escapeHtml(u.unit_number)} — ${fmtMoney(u.rent_amount)}/mo</option>`).join("");
     });
   }
 

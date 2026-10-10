@@ -64,7 +64,6 @@ function registerForm() {
         <select name="role">
           <option value="landlord">Landlord</option>
           <option value="tenant">Tenant</option>
-          <option value="admin">Admin</option>
         </select>
       </label>
       <button class="btn btn-primary" type="submit">Create account</button>

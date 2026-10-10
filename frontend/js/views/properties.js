@@ -1,5 +1,5 @@
 import { api } from "../api.js";
-import { openModal, toast, fmtMoney, labelize, formToJson } from "../ui.js";
+import { openModal, toast, fmtMoney, labelize, formToJson, escapeHtml } from "../ui.js";
 import { navigate } from "../router.js";
 
 const PROPERTY_TYPES = ["single_family", "multi_family", "apartment", "condo", "commercial"];
@@ -35,8 +35,8 @@ export async function renderProperties(view, state) {
             .map(
               (p) => `
             <tr class="row-link" data-href="/properties/${p.id}">
-              <td>${p.name}</td>
-              <td>${p.address_line1}, ${p.city}, ${p.state} ${p.zip_code}</td>
+              <td>${escapeHtml(p.name)}</td>
+              <td>${escapeHtml(p.address_line1)}, ${escapeHtml(p.city)}, ${escapeHtml(p.state)} ${escapeHtml(p.zip_code)}</td>
               <td><span class="badge">${labelize(p.property_type)}</span></td>
               <td><a href="#/properties/${p.id}">View units →</a></td>
             </tr>`
@@ -75,8 +75,8 @@ export async function renderPropertyDetail(view, state, idStr) {
     <div class="view-header">
       <div>
         <a href="#/properties" class="back-link">← Properties</a>
-        <h1>${prop.name}</h1>
-        <p class="muted">${prop.address_line1}, ${prop.city}, ${prop.state} ${prop.zip_code} · ${labelize(prop.property_type)}</p>
+        <h1>${escapeHtml(prop.name)}</h1>
+        <p class="muted">${escapeHtml(prop.address_line1)}, ${escapeHtml(prop.city)}, ${escapeHtml(prop.state)} ${escapeHtml(prop.zip_code)} · ${labelize(prop.property_type)}</p>
       </div>
       ${
         canEdit
@@ -127,7 +127,7 @@ export async function renderPropertyDetail(view, state, idStr) {
           .map(
             (u) => `
           <tr class="row-link" data-href="/units/${u.id}">
-            <td>${u.unit_number}</td>
+            <td>${escapeHtml(u.unit_number)}</td>
             <td>${u.bedrooms} bd / ${u.bathrooms} ba</td>
             <td>${fmtMoney(u.rent_amount)}</td>
             <td><span class="badge badge-${u.status}">${labelize(u.status)}</span></td>
@@ -150,12 +150,12 @@ function openPropertyForm(onDone, existing) {
   const isEdit = !!existing;
   const { close } = openModal(isEdit ? "Edit property" : "Add property", `
     <form id="property-form">
-      <label>Name<input name="name" required value="${existing?.name ?? ""}" /></label>
-      <label>Address<input name="address_line1" required value="${existing?.address_line1 ?? ""}" /></label>
+      <label>Name<input name="name" required value="${escapeHtml(existing?.name ?? "")}" /></label>
+      <label>Address<input name="address_line1" required value="${escapeHtml(existing?.address_line1 ?? "")}" /></label>
       <div class="form-row">
-        <label>City<input name="city" required value="${existing?.city ?? ""}" /></label>
-        <label>State<input name="state" required value="${existing?.state ?? ""}" /></label>
-        <label>ZIP<input name="zip_code" required value="${existing?.zip_code ?? ""}" /></label>
+        <label>City<input name="city" required value="${escapeHtml(existing?.city ?? "")}" /></label>
+        <label>State<input name="state" required value="${escapeHtml(existing?.state ?? "")}" /></label>
+        <label>ZIP<input name="zip_code" required value="${escapeHtml(existing?.zip_code ?? "")}" /></label>
       </div>
       <label>Type
         <select name="property_type">
@@ -190,7 +190,7 @@ function openUnitForm(propertyId, onDone, existing) {
   const isEdit = !!existing;
   const { close } = openModal(isEdit ? `Edit unit ${existing.unit_number}` : "Add unit", `
     <form id="unit-form">
-      <label>Unit number<input name="unit_number" required value="${existing?.unit_number ?? ""}" /></label>
+      <label>Unit number<input name="unit_number" required value="${escapeHtml(existing?.unit_number ?? "")}" /></label>
       <div class="form-row">
         <label>Bedrooms<input type="number" min="0" name="bedrooms" value="${existing?.bedrooms ?? 1}" /></label>
         <label>Bathrooms<input type="number" min="0" step="0.5" name="bathrooms" value="${existing?.bathrooms ?? 1}" /></label>

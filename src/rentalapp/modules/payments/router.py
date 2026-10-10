@@ -13,18 +13,18 @@ _staff = require_roles(UserRole.ADMIN, UserRole.LANDLORD)
 
 
 @router.post("", response_model=InvoiceRead, status_code=201)
-def create_invoice(data: InvoiceCreate, db: Session = Depends(get_db), _: User = Depends(_staff)) -> InvoiceRead:
-    return InvoiceService(db).create(data)
+def create_invoice(data: InvoiceCreate, db: Session = Depends(get_db), user: User = Depends(_staff)) -> InvoiceRead:
+    return InvoiceService(db).create(data, user)
 
 
 @router.get("/{invoice_id}", response_model=InvoiceRead)
-def get_invoice(invoice_id: int, db: Session = Depends(get_db), _: User = Depends(get_current_user)):
-    return InvoiceService(db).get(invoice_id)
+def get_invoice(invoice_id: int, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+    return InvoiceService(db).get(invoice_id, user)
 
 
 @router.get("/by-lease/{lease_id}", response_model=list[InvoiceRead])
-def list_invoices_for_lease(lease_id: int, db: Session = Depends(get_db), _: User = Depends(get_current_user)):
-    return InvoiceService(db).list_for_lease(lease_id)
+def list_invoices_for_lease(lease_id: int, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+    return InvoiceService(db).list_for_lease(lease_id, user)
 
 
 @router.post("/{invoice_id}/payments", response_model=InvoiceRead)
@@ -32,11 +32,11 @@ def record_payment(
     invoice_id: int,
     data: PaymentRecord,
     db: Session = Depends(get_db),
-    _: User = Depends(_staff),
+    user: User = Depends(_staff),
 ):
-    return InvoiceService(db).record_payment(invoice_id, data)
+    return InvoiceService(db).record_payment(invoice_id, data, user)
 
 
 @router.post("/refresh-overdue", response_model=list[InvoiceRead])
-def refresh_overdue(db: Session = Depends(get_db), _: User = Depends(_staff)):
-    return InvoiceService(db).refresh_overdue_statuses()
+def refresh_overdue(db: Session = Depends(get_db), user: User = Depends(_staff)):
+    return InvoiceService(db).refresh_overdue_statuses(user)
